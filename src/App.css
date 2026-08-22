@@ -1,0 +1,47 @@
+ .app-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.file-vault {
+  width: min(100%, 480px);
+  padding: 28px;
+  background: #0b0e12;
+  border: 1px solid #1f2530;
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .32);
+}
+
+.vault-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.vault-title { margin: 0; color: #8a93a6; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.file-count, .fetch-button, .extension-badge, .file-name, .file-size, .status-message { font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace; }
+.file-count { color: #4dd9c0; font-size: 13px; }
+
+.fetch-button {
+  width: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 16px; color: #4dd9c0;
+  background: #12161c; border: 1px solid #1f2530; border-radius: 8px; font-size: 13px; text-align: left;
+  cursor: pointer; transition: border-color 150ms ease, background 150ms ease;
+}
+.fetch-button:hover:not(:disabled) { background: #151b20; border-color: #4dd9c0; }
+.fetch-button:focus-visible { outline: 2px solid #4dd9c0; outline-offset: 3px; }
+.fetch-button:disabled { opacity: .6; cursor: default; }
+.terminal-cursor { width: 7px; height: 14px; background: #4dd9c0; animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.file-list { display: flex; flex-direction: column; padding: 0; margin: 18px 0 0; list-style: none; }
+.file-row { display: flex; align-items: center; gap: 12px; padding: 10px 6px; border-bottom: 1px solid #1f2530; transition: background 150ms ease; }
+.file-row:last-child { border-bottom: 0; }
+.file-row:hover { background: #12161c; }
+.extension-badge { min-width: 38px; flex-shrink: 0; padding: 3px 7px; border-radius: 5px; font-size: 11px; font-weight: 500; text-align: center; }
+.file-name { min-width: 0; flex: 1; overflow: hidden; color: #e7eaf0; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.file-size { flex-shrink: 0; color: #8a93a6; font-size: 12px; }
+.status-message { margin: 18px 0 0; padding: 24px 6px; color: #8a93a6; border: 1px dashed #1f2530; border-radius: 8px; font-size: 13px; text-align: center; }
+.error-message { color: #e27d6b; }
+
+@media (max-width: 480px) {
+  .app-shell { padding: 16px; }
+  .file-vault { padding: 22px; }
+  .file-row { gap: 8px; }
+}
