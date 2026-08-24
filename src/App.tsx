@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import FolderSelector, { type FolderOption } from './components/FolderSelector'
 
 interface FileItem {
   fileName: string
@@ -10,6 +11,13 @@ const extensionColors: Record<string, string> = {
   png: '#4dd9c0', jpg: '#4dd9c0', jpeg: '#4dd9c0', json: '#f2b84b',
   zip: '#e27d6b', glsl: '#8c9eff', ogg: '#c792ea', tscn: '#4dd9c0', default: '#8a93a6',
 }
+
+const folders: FolderOption[] = [
+  { label: 'Downloads', value: 'Downloads' },
+  { label: 'Hussein nasser', value: 'husseinnasser' },
+  { label: '100xdevs', value: '100xdevs' },
+  { label: 'Solid principle', value: 'solidprinciple' },
+]
 
 function getExtension(fileName: string) {
   const parts = fileName.split('.')
@@ -23,12 +31,14 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [fetched, setFetched] = useState(false)
   const [error, setError] = useState('')
+  const [selectedFolder, setSelectedFolder] = useState('')
 
-  const getFiles = async () => {
+  const getFiles = async (folder = selectedFolder) => {
     setLoading(true)
     setError('')
     try {
-      const response = await fetch('http://localhost:3004/api/files')
+      const query = folder ? `?path=${encodeURIComponent(folder)}` : ''
+      const response = await fetch(`http://localhost:3004/api/files${query}`)
       if (!response.ok) throw new Error('Unable to reach the files service.')
       const data = await response.json()
       if (!data.success || !Array.isArray(data.data)) throw new Error('The files service returned an unexpected response.')
@@ -43,6 +53,11 @@ function App() {
     }
   }
 
+  const selectFolder = (folder: string) => {
+    setSelectedFolder(folder)
+    getFiles(folder)
+  }
+
   return (
     <main className="app-shell">
       <section className="file-vault" aria-labelledby="files-heading">
@@ -50,7 +65,13 @@ function App() {
           <p id="files-heading" className="vault-title">Files</p>
           {fetched && <span className="file-count">{files.length} found</span>}
         </header>
-        <button className="fetch-button" type="button" onClick={getFiles} disabled={loading}>
+        <FolderSelector
+          disabled={loading}
+          folders={folders}
+          onSelect={selectFolder}
+          selectedFolder={selectedFolder}
+        />
+        <button className="fetch-button" type="button" onClick={() => getFiles()} disabled={loading}>
           <span className="terminal-cursor" aria-hidden="true" />
           {loading ? 'fetching...' : 'get my files'}
         </button>
