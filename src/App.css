@@ -19,7 +19,7 @@
 
 .vault-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
 .vault-title { margin: 0; color: #8a93a6; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
-.file-count, .fetch-button, .extension-badge, .file-name, .file-size, .status-message { font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace; }
+.file-count, .fetch-button, .extension-badge, .file-name, .file-size, .status-message, .rename-input, .rename-button { font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace; }
 .file-count { color: #4dd9c0; font-size: 13px; }
 
 .folder-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
@@ -51,6 +51,14 @@
 .extension-badge { min-width: 38px; flex-shrink: 0; padding: 3px 7px; border-radius: 5px; font-size: 11px; font-weight: 500; text-align: center; }
 .file-name { min-width: 0; flex: 1; overflow: hidden; color: #e7eaf0; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
 .file-size { flex-shrink: 0; color: #8a93a6; font-size: 12px; }
+.rename-form { display: flex; flex: 1; min-width: 0; gap: 6px; }
+.rename-input { min-width: 0; flex: 1; padding: 6px 8px; color: #e7eaf0; background: #12161c; border: 1px solid #4dd9c0; border-radius: 5px; font-size: 12px; }
+.rename-input:focus { outline: 2px solid #4dd9c0; outline-offset: 2px; }
+.rename-button { flex-shrink: 0; padding: 5px 8px; color: #4dd9c0; background: transparent; border: 1px solid #2f584f; border-radius: 5px; font-size: 11px; cursor: pointer; }
+.rename-button:hover:not(:disabled) { background: #14221f; border-color: #4dd9c0; }
+.rename-button:focus-visible { outline: 2px solid #4dd9c0; outline-offset: 2px; }
+.rename-button:disabled { opacity: .6; cursor: default; }
+.cancel-button { color: #8a93a6; border-color: #3a424e; }
 .status-message { margin: 18px 0 0; padding: 24px 6px; color: #8a93a6; border: 1px dashed #1f2530; border-radius: 8px; font-size: 13px; text-align: center; }
 .error-message { color: #e27d6b; }
 

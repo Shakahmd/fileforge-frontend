@@ -28,6 +28,9 @@ function App() {
   const [folders, setFolders] = useState<FolderOption[]>([])
   const [foldersLoading, setFoldersLoading] = useState(true)
   const [foldersError, setFoldersError] = useState('')
+  const [renamingFile, setRenamingFile] = useState<string | null>(null)
+  const [newFileName, setNewFileName] = useState('')
+  const [renameLoading, setRenameLoading] = useState(false)
 
   useEffect(() => {
     const loadFolders = async () => {
@@ -79,6 +82,59 @@ function App() {
     getFiles(folder)
   }
 
+  const startRenaming = (fileName: string) => {
+    setError('')
+    setRenamingFile(fileName)
+    setNewFileName(fileName)
+  }
+
+  const cancelRenaming = () => {
+    setRenamingFile(null)
+    setNewFileName('')
+  }
+
+  const renameFile = async (oldName: string) => {
+    const trimmedName = newFileName.trim()
+
+    if (!trimmedName) {
+      setError('A file name is required.')
+      return
+    }
+
+    if (trimmedName.includes('/') || trimmedName.includes('\\')) {
+      setError('The new file name cannot include a path.')
+      return
+    }
+
+    if (trimmedName === oldName) {
+      cancelRenaming()
+      return
+    }
+
+    setRenameLoading(true)
+    setError('')
+    try {
+      const response = await fetch('http://localhost:3004/api/files/rename', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folderName: selectedFolder, fileName:oldName, newName: trimmedName }),
+      })
+      if (!response.ok) throw new Error('Unable to rename the file.')
+
+      const data = await response.json()
+      if (!data.success) throw new Error(data.message || 'Unable to rename the file.')
+
+      setFiles((currentFiles) => currentFiles.map((file) => (
+        file.fileName === oldName ? { ...file, fileName: trimmedName } : file
+      )))
+      cancelRenaming()
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'Unable to rename the file.')
+    } finally {
+      setRenameLoading(false)
+    }
+  }
+
   return (
     <main className="app-shell">
       <section className="file-vault" aria-labelledby="folders-heading">
@@ -111,11 +167,42 @@ function App() {
             {files.map((file, index) => {
               const extension = getExtension(file.fileName)
               const color = extensionColors[extension] ?? extensionColors.default
+              const isRenaming = renamingFile === file.fileName
               return (
                 <li className="file-row" key={`${file.fileName}-${index}`}>
                   <span className="extension-badge" style={{ color, backgroundColor: `${color}1a` }}>{extension || '—'}</span>
-                  <span className="file-name" title={file.fileName}>{file.fileName}</span>
+                  {isRenaming ? (
+                    <form
+                      className="rename-form"
+                      onSubmit={(event) => {
+                        event.preventDefault()
+                        void renameFile(file.fileName)
+                      }}
+                    >
+                      <input
+                        aria-label={`New name for ${file.fileName}`}
+                        autoFocus
+                        className="rename-input"
+                        disabled={renameLoading}
+                        onChange={(event) => setNewFileName(event.target.value)}
+                        value={newFileName}
+                      />
+                      <button className="rename-button" disabled={renameLoading} type="submit">
+                        {renameLoading ? 'saving...' : 'save'}
+                      </button>
+                      <button className="rename-button cancel-button" disabled={renameLoading} onClick={cancelRenaming} type="button">
+                        cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <span className="file-name" title={file.fileName}>{file.fileName}</span>
+                  )}
                   <span className="file-size">{file.size}</span>
+                  {!isRenaming && (
+                    <button className="rename-button" onClick={() => startRenaming(file.fileName)} type="button">
+                      rename
+                    </button>
+                  )}
                 </li>
               )
             })}
